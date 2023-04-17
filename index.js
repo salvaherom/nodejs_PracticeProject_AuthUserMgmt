@@ -6,38 +6,27 @@ const routes = require('./router/friends.js')
 let users = []
 
 const doesExist = (username)=>{
-  let userswithsamename = users.filter((user)=>{
+  return userswithsamename = users.some((user)=>{
     return user.username === username
   });
-  if(userswithsamename.length > 0){
-    return true;
-  } else {
-    return false;
-  }
 }
 
 const authenticatedUser = (username,password)=>{
-  let validusers = users.filter((user)=>{
+    return users.some((user)=> {
     return (user.username === username && user.password === password)
   });
-  if(validusers.length > 0){
-    return true;
-  } else {
-    return false;
-  }
 }
 
 const app = express();
 
-app.use(session({secret:"fingerpint"},resave=true,saveUninitialized=true));
-
+app.use(session({secret:"fingerprint"}, resave=true, saveUninitialized=true));
 app.use(express.json());
 
-app.use("/friends", function auth(req,res,next){
+app.use("/friends", function auth(req, res, next) {
    if(req.session.authorization) {
        token = req.session.authorization['accessToken'];
-       jwt.verify(token, "access",(err,user)=>{
-           if(!err){
+       jwt.verify(token, "access", (err,user)=>{
+           if(!err) {
                req.user = user;
                next();
            }
@@ -64,7 +53,7 @@ app.post("/login", (req,res) => {
     }, 'access', { expiresIn: 60 * 60 });
 
     req.session.authorization = {
-      accessToken,username
+      accessToken, username
   }
   return res.status(200).send("User successfully logged in");
   } else {
